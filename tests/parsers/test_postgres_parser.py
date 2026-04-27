@@ -98,3 +98,16 @@ def test_plan_node_repr(parser):
     root = parser.parse(SIMPLE_PLAN)
     assert "Seq Scan" in repr(root)
     assert "cost=" in repr(root)
+
+
+@pytest.mark.parametrize("invalid_input", [
+    None,
+    "",
+    "not valid json{",
+    {},
+    [{"NoPlan": {}}],
+])
+def test_parse_invalid_input_raises(parser, invalid_input):
+    """Parser should raise ValueError for malformed or missing plan data."""
+    with pytest.raises((ValueError, KeyError, TypeError)):
+        parser.parse(invalid_input)
