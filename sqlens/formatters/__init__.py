@@ -1,27 +1,39 @@
-"""Formatters package for sqlens."""
+"""Formatter registry for sqlens."""
 
-from sqlens.formatters import text, json as json_fmt
-
-__all__ = ["text", "json_fmt"]
+from types import ModuleType
 
 
-def get_formatter(fmt: str):
-    """Return a formatter module by name.
+def get_formatter(fmt: str) -> ModuleType:
+    """Return the formatter module for *fmt*.
 
-    Supported values: ``'text'``, ``'json'``.
+    Parameters
+    ----------
+    fmt:
+        One of ``"text"``, ``"json"``, ``"html"``, ``"markdown"``, or
+        ``"mermaid"``.
 
     Raises
     ------
     ValueError
-        If *fmt* is not a recognised formatter name.
+        If *fmt* is not a supported formatter name.
     """
-    _registry = {
-        "text": text,
-        "json": json_fmt,
-    }
-    if fmt not in _registry:
-        raise ValueError(
-            f"Unknown formatter {fmt!r}. "
-            f"Supported formatters: {sorted(_registry)}"
-        )
-    return _registry[fmt]
+    if fmt == "text":
+        from sqlens.formatters import text
+        return text
+    if fmt == "json":
+        from sqlens.formatters import json
+        return json
+    if fmt == "html":
+        from sqlens.formatters import html
+        return html
+    if fmt == "markdown":
+        from sqlens.formatters import markdown
+        return markdown
+    if fmt == "mermaid":
+        from sqlens.formatters import mermaid
+        return mermaid
+
+    supported = "text, json, html, markdown, mermaid"
+    raise ValueError(
+        f"Unknown formatter {fmt!r}. Supported formatters: {supported}"
+    )
